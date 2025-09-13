@@ -1,0 +1,21 @@
+# Arquivos e pastas do Visual Studio
+# Ignora a pasta de configurações do usuário da solução
+.vs/
+
+# Ignora arquivos de opções do usuário e da solução
+*.suo
+*.user
+
+# Arquivos de compilação
+# Ignora as pastas que guardam os arquivos compilados (executáveis, DLLs)
+[Bb]in/
+[Oo]bj/
+
+# Arquivos de pacotes (gerenciados pelo NuGet)
+# Ignora a pasta de pacotes baixados para não sobrecarregar o repositório
+[Pp]ackages/
+*.nupkg
+
+# Arquivos de configuração local
+# Ignora configurações específicas do ambiente de desenvolvimento de cada um
+appsettings.Development.json 
