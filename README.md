@@ -8,7 +8,7 @@ Desenvolver um sistema web para otimizar o gerenciamento de pacientes, agendamen
 
 ## 👥 Equipe
 
-* Nome do Aluno 1 - RA: XXXXX
+* NOAH BATISTA 1 - RA: G91GGH5
 * Nome do Aluno 2 - RA: XXXXX
 * Nome do Aluno 3 - RA: XXXXX
 * Nome do Aluno 4 - RA: XXXXX
