@@ -1,9 +1,33 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36301.6 d17.14
+VisualStudioVersion = 17.14.36301.6
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebClinic.Web", "WebClinic.Web\WebClinic.Web.csproj", "{29796288-F78C-43A5-9B4F-4A6B7850E17D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebClinic.Core", "WebClinic.Core\WebClinic.Core.csproj", "{1BCFA538-63F0-4E16-8221-9D04FE7E1A63}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebClinic.Data", "WebClinic.Data\WebClinic.Data.csproj", "{960D0154-5DAC-486A-B6E3-55CD5DA9F678}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{29796288-F78C-43A5-9B4F-4A6B7850E17D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29796288-F78C-43A5-9B4F-4A6B7850E17D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29796288-F78C-43A5-9B4F-4A6B7850E17D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29796288-F78C-43A5-9B4F-4A6B7850E17D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1BCFA538-63F0-4E16-8221-9D04FE7E1A63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1BCFA538-63F0-4E16-8221-9D04FE7E1A63}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1BCFA538-63F0-4E16-8221-9D04FE7E1A63}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1BCFA538-63F0-4E16-8221-9D04FE7E1A63}.Release|Any CPU.Build.0 = Release|Any CPU
+		{960D0154-5DAC-486A-B6E3-55CD5DA9F678}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{960D0154-5DAC-486A-B6E3-55CD5DA9F678}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{960D0154-5DAC-486A-B6E3-55CD5DA9F678}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{960D0154-5DAC-486A-B6E3-55CD5DA9F678}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
