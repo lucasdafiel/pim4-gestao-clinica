@@ -24,7 +24,6 @@ namespace WebClinic.Web.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize]
         public IActionResult ObterPorId(int id)
         {
             var paciente = _pacienteRepository.ObterPorId(id);
@@ -33,7 +32,6 @@ namespace WebClinic.Web.Controllers
         }
 
         [HttpPost]
-        [Authorize]
         public IActionResult Criar([FromBody] Paciente novoPaciente)
         {
             if (novoPaciente == null) return BadRequest();
@@ -47,7 +45,6 @@ namespace WebClinic.Web.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize]
         public IActionResult Atualizar(int id, [FromBody] Paciente pacienteAtualizado)
         {
             if (id != pacienteAtualizado.PacienteId) return BadRequest();
@@ -65,7 +62,6 @@ namespace WebClinic.Web.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize]
         public IActionResult Excluir(int id)
         {
             var paciente = _pacienteRepository.ObterPorId(id);
