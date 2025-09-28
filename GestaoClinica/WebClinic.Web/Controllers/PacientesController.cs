@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WebClinic.Core.Interfaces;
 using WebClinic.Core.Models;
 
@@ -6,6 +7,7 @@ namespace WebClinic.Web.Controllers
 {
     [ApiController] // ETIQUETA 1: Identifica esta classe como um Controller de API
     [Route("api/[controller]")] // ETIQUETA 2: Define a rota base como "/api/pacientes"
+    [Authorize] // ETIQUETA 3: Exige que o usuário esteja autenticado para acessar os endpoints
     public class PacientesController : ControllerBase
     {
         private readonly IPacienteRepository _pacienteRepository;
@@ -22,6 +24,7 @@ namespace WebClinic.Web.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public IActionResult ObterPorId(int id)
         {
             var paciente = _pacienteRepository.ObterPorId(id);
@@ -30,6 +33,7 @@ namespace WebClinic.Web.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public IActionResult Criar([FromBody] Paciente novoPaciente)
         {
             if (novoPaciente == null) return BadRequest();
@@ -43,6 +47,7 @@ namespace WebClinic.Web.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         public IActionResult Atualizar(int id, [FromBody] Paciente pacienteAtualizado)
         {
             if (id != pacienteAtualizado.PacienteId) return BadRequest();
@@ -60,6 +65,7 @@ namespace WebClinic.Web.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public IActionResult Excluir(int id)
         {
             var paciente = _pacienteRepository.ObterPorId(id);
