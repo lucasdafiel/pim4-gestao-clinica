@@ -13,7 +13,7 @@ namespace WebClinic.Core.Models
         public string CPF { get; set; }
         public DateTime DataNascimento { get; set; }
         public string TelefoneContato { get; set; }
-        public string? Email { get; set; } // O '?' indica que o campo pode ser nulo (opcional)
+        public string? Email { get; set; }
         public DateTime DataCadastro { get; set; }
     }
-}
+}   

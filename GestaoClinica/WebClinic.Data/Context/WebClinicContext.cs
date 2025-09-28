@@ -7,7 +7,7 @@ using WebClinic.Core.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace WebClinic.Data.Context
-{
+{   
     public class WebClinicContext : DbContext
     {
         public WebClinicContext(DbContextOptions<WebClinicContext> options) : base(options)
