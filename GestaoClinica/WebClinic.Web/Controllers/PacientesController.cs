@@ -5,7 +5,7 @@ using WebClinic.Core.Models;
 namespace WebClinic.Web.Controllers
 {
     [ApiController] // ETIQUETA 1: Identifica esta classe como um Controller de API
-    [Route("api/[controller]")] // ETIQUETA 2: Define a rota base como "/api/pacientes"
+    [Route("api/Pacientes")] // ETIQUETA 2: Define a rota base como "/api/pacientes"
     public class PacientesController : ControllerBase
     {
         private readonly IPacienteRepository _pacienteRepository;
