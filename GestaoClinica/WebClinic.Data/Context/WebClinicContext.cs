@@ -18,5 +18,7 @@ namespace WebClinic.Data.Context
         // Adicionaremos um DbSet para cada entidade (Profissionais, Consultas, etc.)
         public DbSet<Paciente> Pacientes { get; set; }
         // public DbSet<Profissional> Profissionais { get; set; } // Exemplo para o futuro
+        public DbSet<Usuario> Usuarios { get; set; }
+        public DbSet<Perfil> Perfis { get; set; }
     }
 }
