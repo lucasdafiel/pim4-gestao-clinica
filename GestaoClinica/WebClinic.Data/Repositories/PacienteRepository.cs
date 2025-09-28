@@ -39,10 +39,24 @@ namespace WebClinic.Data.Repositories
             return _context.Pacientes.ToList();
         }
 
-        public void Atualizar(Paciente paciente)
+        public void Atualizar(Paciente pacienteAtualizado)
         {
-            _context.Pacientes.Update(paciente);
-            _context.SaveChanges();
+            // 1. Busca a entidade original no banco. O DbContext começa a rastreá-la.
+            var pacienteExistente = ObterPorId(pacienteAtualizado.PacienteId);
+
+            // 2. Se a entidade existir, atualizamos suas propriedades.
+            if (pacienteExistente != null)
+            {
+                // Copia os valores do objeto que veio da API para o objeto que já está sendo rastreado.
+                pacienteExistente.NomeCompleto = pacienteAtualizado.NomeCompleto;
+                pacienteExistente.CPF = pacienteAtualizado.CPF;
+                pacienteExistente.DataNascimento = pacienteAtualizado.DataNascimento;
+                pacienteExistente.TelefoneContato = pacienteAtualizado.TelefoneContato;
+                pacienteExistente.Email = pacienteAtualizado.Email;
+
+                // 3. Salva as alterações. O EF Core detecta as mudanças na entidade rastreada e gera o comando UPDATE correto.
+                _context.SaveChanges();
+            }
         }
 
         public void Excluir(int id)

@@ -21,13 +21,23 @@ builder.Services.AddScoped<IPacienteRepository, PacienteRepository>();
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+// Adiciona os serviços para descobrir e descrever os endpoints da API
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 var app = builder.Build();
 
+
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
+{
+    // ADICIONE AS LINHAS ABAIXO AQUI
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+else
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
