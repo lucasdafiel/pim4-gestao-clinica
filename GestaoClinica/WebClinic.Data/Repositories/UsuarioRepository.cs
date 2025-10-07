@@ -30,5 +30,13 @@ namespace WebClinic.Data.Repositories
                                  .Include(u => u.Perfil)
                                  .FirstOrDefaultAsync(u => u.Email == email);
         }
+
+        public Usuario GetByEmail(string email)
+        {
+            // Incluímos o .Include(u => u.Perfil) para carregar os dados do perfil
+            return _context.Usuarios
+                           .Include(u => u.Perfil)
+                           .FirstOrDefault(u => u.Email == email);  
+        }
     }
 }

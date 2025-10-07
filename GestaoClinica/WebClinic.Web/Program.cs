@@ -65,6 +65,24 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IPacienteRepository, PacienteRepository>();
 builder.Services.AddDbContext<WebClinicContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = false, // Em produção, considere validar o emissor
+        ValidateAudience = false, // Em produção, considere validar a audiência
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+    };
+});
+
 // --- CONSTRUÇÃO E PIPELINE ---
 var app = builder.Build();
 
