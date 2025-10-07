@@ -21,6 +21,13 @@ namespace WebClinic.Web.Services
 
         public string GenerateToken(Usuario usuario)
         {
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Name, usuario.Email),
+                // Adicionamos a claim de Role (perfil)
+                new Claim(ClaimTypes.Role, usuario.Perfil.Nome)
+            };
+
             // O handler é responsável por criar e serializar o token.
             var tokenHandler = new JwtSecurityTokenHandler();
 
