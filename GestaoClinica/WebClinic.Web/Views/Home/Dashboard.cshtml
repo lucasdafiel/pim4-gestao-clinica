@@ -1,0 +1,44 @@
+﻿// Local: /Views/Home/Dashboard.cshtml
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<header class="pb-3 mb-4 border-bottom">
+    <h1 class="display-5">Dashboard</h1>
+    <p class="lead">Olá! Bem-vindo(a) de volta. Aqui está um resumo do seu dia.</p>
+</header>
+
+<section class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title text-muted">Consultas Agendadas Hoje</h5>
+                <p class="card-text fs-1 fw-bold">0</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title text-muted">Pacientes Atendidos</h5>
+                <p class="card-text fs-1 fw-bold">0</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title text-muted">Próxima Consulta</h5>
+                <p class="card-text fs-4 fw-bold">-</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2 class="pb-2 border-bottom">Consultas de Hoje</h2>
+    <div class="alert alert-info mt-3">
+        Nenhuma consulta para hoje.
+    </div>
+</section>
