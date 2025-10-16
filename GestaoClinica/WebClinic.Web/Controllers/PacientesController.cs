@@ -7,7 +7,7 @@ namespace WebClinic.Web.Controllers
 {
     [ApiController] // ETIQUETA 1: Identifica esta classe como um Controller de API
     [Route("api/[controller]")] // ETIQUETA 2: Define a rota base como "/api/pacientes"
-    [Authorize] // ETIQUETA 3: Exige que o usuário esteja autenticado para acessar os endpoints
+    //[Authorize] // ETIQUETA 3: Exige que o usuário esteja autenticado para acessar os endpoints
     public class PacientesController : ControllerBase
     {
         private readonly IPacienteRepository _pacienteRepository;
@@ -34,6 +34,7 @@ namespace WebClinic.Web.Controllers
         [HttpPost]
         public IActionResult Criar([FromBody] Paciente novoPaciente)
         {
+            System.Diagnostics.Debug.WriteLine("--- O MÉTODO 'CRIAR' DOI ACIONADO! ---");
             if (novoPaciente == null) return BadRequest();
 
             if (_pacienteRepository.ObterPorCPF(novoPaciente.CPF) != null)
