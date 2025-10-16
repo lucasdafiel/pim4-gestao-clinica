@@ -12,6 +12,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 // --- CONFIGURAÇÃO DOS SERVIÇOS ---
 
+// Registra os serviços para controllers que usam Views (MVC)
+builder.Services.AddControllersWithViews();
+
+// Registra os serviços específicos para as API Controllers
+// Isso adiciona funcionalidades como a inferência de [FromBody] e validação automática.
+builder.Services.AddControllers();
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages(); // Adicione esta linha para Razor Pages
 
@@ -87,9 +93,13 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+// Habilita o roteamento para as API Controllers (ex: PacientesController)
+app.MapControllers();
+
+app.MapRazorPages();
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-app.MapRazorPages(); // Adicione esta linha para Razor Pages
 
 app.Run();
