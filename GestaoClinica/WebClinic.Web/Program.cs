@@ -1,95 +1,39 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
-using System.Text;
 using WebClinic.Core.Interfaces;
 using WebClinic.Data.Context;
 using WebClinic.Data.Repositories;
 using WebClinic.Web.Services;
 
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
 var builder = WebApplication.CreateBuilder(args);
 
-// --- CONFIGURAÇÃO DOS SERVIÇOS ---
-
-// Registra os serviços para controllers que usam Views (MVC)
-builder.Services.AddControllersWithViews();
-
-// Registra os serviços específicos para as API Controllers
-// Isso adiciona funcionalidades como a inferência de [FromBody] e validação automática.
-builder.Services.AddControllers();
-builder.Services.AddControllersWithViews();
-builder.Services.AddRazorPages(); // Adicione esta linha para Razor Pages
-
-// Configuração da Autenticação JWT
-var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]);
-builder.Services.AddAuthentication(options =>
+builder.Services.AddCors(options =>
 {
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.RequireHttpsMetadata = true;
-    options.SaveToken = true;
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(key),
-        ValidateIssuer = false, // Defina como true se quiser validar o emissor
-        ValidateAudience = false, // Defina como true se quiser validar o público
-        // ValidIssuer = builder.Configuration["Jwt:Issuer"], // Descomente se for validar
-        // ValidAudience = builder.Configuration["Jwt:Audience"], // Descomente se for validar
-        ClockSkew = TimeSpan.Zero // Opcional: reduz tolerância de expiração
-    };
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+                      policy =>
+                      {
+                          // AQUI ESTÁ A CORREÇÃO: Permitindo a porta correta do seu frontend.
+                          policy.WithOrigins("https://localhost:7022")
+                                .AllowAnyHeader()
+                                .AllowAnyMethod();
+                      });
 });
 
-// Configuração do Swagger para usar JWT
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebClinic API", Version = "v1" });
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Description = "Insira o token JWT: Bearer {seu token}",
-        Name = "Authorization",
-        In = ParameterLocation.Header,
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
-    });
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme { Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" } },
-            new string[] {}
-        }
-    });
-});
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
+builder.Services.AddDbContext<WebClinicContext>(options =>
+    options.UseSqlServer(connectionString));
+
+builder.Services.AddControllersWithViews();
+
+builder.Services.AddScoped<IPacienteRepository, PacienteRepository>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<ITokenService, TokenService>();
-builder.Services.AddScoped<IPacienteRepository, PacienteRepository>();
-builder.Services.AddDbContext<WebClinicContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = false, // Em produção, considere validar o emissor
-        ValidateAudience = false, // Em produção, considere validar a audiência
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
-    };
-});
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
-// --- CONSTRUÇÃO E PIPELINE ---
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -105,19 +49,20 @@ else
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
 app.UseRouting();
 
-// Ordem correta e crucial para a segurança funcionar
-app.UseAuthentication();
-app.UseAuthorization();
+// Aplica a política de CORS
+app.UseCors(MyAllowSpecificOrigins);
 
-// Habilita o roteamento para as API Controllers (ex: PacientesController)
-app.MapControllers();
-
-app.MapRazorPages();
+// Autenticação desativada para teste
+// app.UseAuthentication(); 
+// app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapControllers();
 
 app.Run();

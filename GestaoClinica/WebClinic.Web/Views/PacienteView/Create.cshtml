@@ -1,50 +1,102 @@
 ﻿@model WebClinic.Core.Models.Paciente
 
 @{
-    ViewData["Title"] = "Adicionar Novo Paciente";
+    ViewData["Title"] = "Novo Paciente";
 }
 
 <h1>@ViewData["Title"]</h1>
+<h4>Formulário de Cadastro</h4>
 <hr />
 <div class="row">
-    <div class="col-md-7">
-        <form asp-action="Create">
+    <div class="col-md-4">
+        @* Alteração 1: Dê um 'id' ao formulário para que o JavaScript possa encontrá-lo. *@
+        <form id="createPacienteForm">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group mb-2">
+            <div class="form-group">
                 <label asp-for="NomeCompleto" class="control-label"></label>
                 <input asp-for="NomeCompleto" class="form-control" />
                 <span asp-validation-for="NomeCompleto" class="text-danger"></span>
             </div>
-            <div class="form-group mb-2">
+            <div class="form-group">
                 <label asp-for="CPF" class="control-label"></label>
                 <input asp-for="CPF" class="form-control" />
                 <span asp-validation-for="CPF" class="text-danger"></span>
             </div>
-            <div class="form-group mb-2">
+            <div class="form-group">
                 <label asp-for="DataNascimento" class="control-label"></label>
-                <input asp-for="DataNascimento" class="form-control" type="date" />
+                <input asp-for="DataNascimento" type="date" class="form-control" />
                 <span asp-validation-for="DataNascimento" class="text-danger"></span>
             </div>
-            <div class="form-group mb-2">
+            <div class="form-group">
                 <label asp-for="TelefoneContato" class="control-label"></label>
                 <input asp-for="TelefoneContato" class="form-control" />
                 <span asp-validation-for="TelefoneContato" class="text-danger"></span>
             </div>
-            <div class="form-group mb-2">
+            <div class="form-group">
                 <label asp-for="Email" class="control-label"></label>
                 <input asp-for="Email" class="form-control" />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
-            <div class="form-group mt-3">
+            <br />
+            <div class="form-group">
+                @* Alteração 2: Mude o botão para 'type="submit"' para que ele acione o evento de submit do formulário. *@
                 <input type="submit" value="Salvar Paciente" class="btn btn-primary" />
-                <a asp-action="Index" class="btn btn-secondary">Voltar para a Lista</a>
             </div>
         </form>
     </div>
+</div>
+
+<div>
+    <a asp-action="Index">Voltar para a Lista</a>
 </div>
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    @* Alteração 3: Adicione este script para controlar o envio do formulário *@
+    <script>
+        document.getElementById('createPacienteForm').addEventListener('submit', function (event) {
+
+            // Previne o envio padrão do formulário (que recarrega a página)
+            event.preventDefault();
+
+            // Monta o objeto com os dados do paciente a partir dos campos do formulário
+            const paciente = {
+                nomeCompleto: document.querySelector('[name="NomeCompleto"]').value,
+                cpf: document.querySelector('[name="CPF"]').value,
+                dataNascimento: document.querySelector('[name="DataNascimento"]').value,
+                telefoneContato: document.querySelector('[name="TelefoneContato"]').value,
+                email: document.querySelector('[name="Email"]').value
+            };
+
+            // URL da sua API (backend) que foi configurada para aceitar requisições
+            const apiUrl = 'https://localhost:7022/api/pacientes';
+
+            // Envia os dados para a API usando o método POST
+            fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(paciente)
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Se a API retornar sucesso, exibe uma mensagem e redireciona
+                    alert('Paciente cadastrado com sucesso!');
+                    window.location.href = '/PacienteView'; // Redireciona para a página de listagem
+                } else {
+                    // Se a API retornar um erro, exibe a mensagem de erro
+                    response.text().then(text => alert('Erro ao cadastrar paciente: ' + text));
+                }
+            })
+            .catch(error => {
+                // Se houver um erro de rede (como a API estar fora do ar)
+                console.error('Erro na requisição:', error);
+                alert('Não foi possível se comunicar com o servidor. Verifique o console para mais detalhes.');
+            });
+        });
+    </script>
 }
