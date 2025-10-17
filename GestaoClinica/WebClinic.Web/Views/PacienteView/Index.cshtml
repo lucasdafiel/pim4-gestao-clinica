@@ -1,5 +1,3 @@
-@model IEnumerable<WebClinic.Core.Models.Paciente>
-
 @{
     ViewData["Title"] = "Gerenciamento de Pacientes";
 }
@@ -24,22 +22,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var paciente in Model)
-                    {
-                        <tr data-paciente-id="@paciente.PacienteId">
-                            <td>@paciente.NomeCompleto</td>
-                            <td>@paciente.CPF</td>
-                            <td>@paciente.TelefoneContato</td>
-                            <td class="text-center">
-                                <button class="btn btn-sm btn-outline-secondary me-1 btn-editar" data-id="@paciente.PacienteId" title="Editar">
-                                    <i class="bi bi-pencil-square"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-danger btn-excluir" data-id="@paciente.PacienteId" data-name="@paciente.NomeCompleto" title="Excluir">
-                                    <i class="bi bi-trash-fill"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    }
+                    @* O conteúdo da tabela será preenchido via JavaScript *@
                 </tbody>
             </table>
         </div>
@@ -70,7 +53,7 @@
                         <input type="date" class="form-control" id="data-nascimento" name="DataNascimento" required>
                     </div>
                     <div class="mb-3">
-                        <label for="telefone" class="form-label">Telefone</label>
+                        <label for="telefone-contato" class="form-label">Telefone</label>
                         <input type="tel" class="form-control" id="telefone-contato" name="TelefoneContato" required>
                     </div>
                     <div class="mb-3">
@@ -88,34 +71,71 @@
 </div>
 
 @section Scripts {
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
     <script>
         $(document).ready(function () {
+
+            // CORREÇÃO 2: Definindo a URL completa da API
+            const apiUrl = 'https://localhost:7288/api/pacientes';
 
             var modalElement = document.getElementById('paciente-modal');
             var modal = new bootstrap.Modal(modalElement);
             var form = $('#paciente-form');
 
-            // ABRIR MODAL PARA ADICIONAR NOVO PACIENTE
+            // --- FUNÇÃO PARA CARREGAR PACIENTES NA TABELA ---
+            function carregarPacientes() {
+                $.ajax({
+                    url: apiUrl,
+                    type: 'GET',
+                    success: function (data) {
+                        var tabelaBody = $('#paciente-tabela tbody');
+                        tabelaBody.empty(); // Limpa a tabela antes de preencher
+                        data.forEach(function (paciente) {
+                            tabelaBody.append(`
+                                <tr data-paciente-id="${paciente.pacienteId}">
+                                    <td>${paciente.nomeCompleto}</td>
+                                    <td>${paciente.cpf}</td>
+                                    <td>${paciente.telefoneContato}</td>
+                                    <td class="text-center">
+                                        <button class="btn btn-sm btn-outline-secondary me-1 btn-editar" data-id="${paciente.pacienteId}" title="Editar">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger btn-excluir" data-id="${paciente.pacienteId}" data-name="${paciente.nomeCompleto}" title="Excluir">
+                                            <i class="bi bi-trash-fill"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            `);
+                        });
+                    },
+                    error: function() {
+                        alert('Erro ao carregar a lista de pacientes. Verifique se a API está rodando.');
+                    }
+                });
+            }
+
+            // Carrega os pacientes quando a página é aberta
+            carregarPacientes();
+
+            // --- LÓGICA DO MODAL E FORMULÁRIO ---
+
             $('#btn-add-new').on('click', function () {
-                form.trigger('reset'); // Limpa o formulário
-                $('#paciente-id').val(''); // Garante que o ID está vazio
+                form.trigger('reset');
+                $('#paciente-id').val('');
                 $('#modal-titulo').text('Adicionar Novo Paciente');
             });
 
-            // ABRIR MODAL PARA EDITAR PACIENTE
             $('#paciente-tabela').on('click', '.btn-editar', function () {
                 var pacienteId = $(this).data('id');
 
-                // 1. Busca os dados do paciente na API
                 $.ajax({
-                    url: '/api/pacientes/' + pacienteId,
+                    url: apiUrl + '/' + pacienteId, // Usa a URL base da API
                     type: 'GET',
                     success: function (data) {
-                        // 2. Preenche o formulário do modal com os dados
                         $('#paciente-id').val(data.pacienteId);
                         $('#nome-completo').val(data.nomeCompleto);
                         $('#cpf').val(data.cpf);
-                        // Formata a data para o formato YYYY-MM-DD que o input[type=date] espera
                         $('#data-nascimento').val(data.dataNascimento.split('T')[0]);
                         $('#telefone-contato').val(data.telefoneContato);
                         $('#email').val(data.email);
@@ -129,16 +149,16 @@
                 });
             });
 
-            // SUBMETER FORMULÁRIO (SALVAR NOVO OU ATUALIZAR EXISTENTE)
             form.on('submit', function (event) {
                 event.preventDefault();
 
                 var pacienteId = $('#paciente-id').val();
-                var isEditing = pacienteId !== '';
+                var isEditing = pacienteId !== '' && pacienteId > 0;
 
-                var url = isEditing ? '/api/pacientes/' + pacienteId : '/api/pacientes';
+                var url = isEditing ? apiUrl + '/' + pacienteId : apiUrl;
                 var type = isEditing ? 'PUT' : 'POST';
 
+                // No C# as propriedades são PascalCase, mas o ASP.NET Core consegue mapear de camelCase (padrão do JS)
                 var formData = {
                     pacienteId: pacienteId || 0,
                     nomeCompleto: $('#nome-completo').val(),
@@ -155,7 +175,8 @@
                     data: JSON.stringify(formData),
                     success: function () {
                         alert('Paciente salvo com sucesso!');
-                        window.location.reload(); // Recarrega a página para mostrar os dados atualizados
+                        modal.hide();
+                        carregarPacientes(); // Atualiza a tabela sem recarregar a página
                     },
                     error: function (xhr) {
                         alert('Erro ao salvar paciente: ' + xhr.responseText);
@@ -163,19 +184,17 @@
                 });
             });
 
-            // EXCLUIR PACIENTE
             $('#paciente-tabela').on('click', '.btn-excluir', function () {
                 var pacienteId = $(this).data('id');
                 var pacienteName = $(this).data('name');
 
                 if (confirm('Tem certeza que deseja excluir o paciente "' + pacienteName + '"?')) {
                     $.ajax({
-                        url: '/api/pacientes/' + pacienteId,
+                        url: apiUrl + '/' + pacienteId,
                         type: 'DELETE',
                         success: function () {
                             alert('Paciente excluído com sucesso!');
-                            // Remove a linha da tabela sem precisar recarregar a página
-                            $('tr[data-paciente-id="' + pacienteId + '"]').remove();
+                            carregarPacientes(); // Atualiza a tabela
                         },
                         error: function () {
                             alert('Erro ao excluir paciente.');
